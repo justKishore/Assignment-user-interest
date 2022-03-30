@@ -1,0 +1,24 @@
+{
+  "name": "assignment-user-interest",
+  "version": "1.0.0",
+  "description": "Assignment of creating user interest webapp",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/justKishore/Assignment-user-interest.git"
+  },
+  "author": "Kishore S",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/justKishore/Assignment-user-interest/issues"
+  },
+  "homepage": "https://github.com/justKishore/Assignment-user-interest#readme",
+  "dependencies": {
+    "body-parser": "^1.19.2",
+    "express": "^4.17.3",
+    "request": "^2.88.2"
+  }
+}
