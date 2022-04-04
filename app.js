@@ -7,6 +7,8 @@ const mongoose = require("mongoose");
 const app = express();
 const port = 3000;
 
+var loginStatus = 0;
+
 // MongoDB
 
 // Connecting to the Database
@@ -35,6 +37,7 @@ app.use(express.static("public"));
 
 // Sending signup page
 app.get("/", function (req, res) {
+  loginStatus = 0;
   res.sendFile(__dirname + "/signup.html");
 });
 
@@ -86,16 +89,104 @@ app.post("/login", function (req, res) {
         }
       }
       if (Lpassword == item[postion].password) {
-        res.send("Login Success");
+        // res.send("Login Success");
+        loginStatus = 1;
+        const Linterest = item[postion].interest;
+        console.log();
+        if (Linterest === 1) {
+          res.redirect("/jokes");
+        }
+        if (Linterest === 2) {
+          res.redirect("/pictures");
+        }
+        if (Linterest === 3) {
+          res.redirect("/quotes");
+        }
       } else {
-        res.send("Login failed");
+        // res.send("Login failed");
+        res.sendFile(__dirname + "/login-failure.html");
       }
       // console.log("Position is : " + postion);
     })
     .catch((err) => {
-      // res.send({ err });
+      res.send({ err });
       console.log(err);
     });
+});
+
+// Interest
+
+// 1. jokes
+
+app.get("/jokes", function (req, res) {
+  // res.send("Jokes");
+
+  if (loginStatus === 1) {
+    const url =
+      "https://v2.jokeapi.dev/joke/Any?blacklistFlags=nsfw&type=twopart";
+    https.get(url, function (response) {
+      console.log(response.statusCode);
+      response.on("data", function (data) {
+        const jokeData = JSON.parse(data);
+        //   res.send(jokeData);
+        console.log(jokeData);
+        const jokeQ = jokeData.setup;
+        const jokeA = jokeData.delivery;
+        //   console.log(jokeQ);
+
+        res.set("Content-Type", "text/html");
+        res.write(`<h3> Q: ${jokeQ} </h3> </br>`);
+        res.write("<h3>A:" + jokeA + "</h3>");
+        res.write(
+          '<form action="/jokes" method="get"><button class="btn btn-dark btn-lg" type="submit">One More</button></form>'
+        );
+        res.send();
+      });
+    });
+  } else {
+    res.redirect("/login");
+  }
+});
+
+// 2. pictures
+app.get("/pictures", function (req, res) {
+  // res.send("pictures");
+  if (loginStatus === 1) {
+    const imgurl = "https://random.imagecdn.app/500/500";
+    res.set("Content-Type", "text/html");
+    res.write("<img src=" + imgurl + "> </br></br>");
+    res.write(
+      '<form action="/pictures" method="get"><button class="btn btn-dark btn-lg" type="submit">One More</button></form>'
+    );
+    res.send();
+  } else {
+    res.redirect("/login");
+  }
+});
+
+// 3. quotes
+app.get("/quotes", function (req, res) {
+  // res.send("quotes");
+  if (loginStatus === 1) {
+    const url = "https://api.kanye.rest/";
+    https.get(url, function (response) {
+      console.log(response.statusCode);
+      response.on("data", function (data) {
+        const quoteData = JSON.parse(data);
+        //   res.send(quoteData.quote);
+        console.log(quoteData);
+
+        res.set("Content-Type", "text/html");
+        res.write(`<h3> ${quoteData.quote} </h3> </br>`);
+        res.write(
+          '<form action="/quotes" method="get"><button class="btn btn-dark btn-lg" type="submit">One More</button></form>'
+        );
+        res.send();
+      });
+    });
+  } else {
+    res.redirect("/login");
+  }
 });
 
 // success and failure route
